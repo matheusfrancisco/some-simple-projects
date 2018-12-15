@@ -1,7 +1,9 @@
 # Some implementations in Algorithms based on Paulo Feofiloff in C/C++  (maybe Javascript  and Python too)
 
 ## Motivation
+The idea of this repository is to implement some algorithms I will initially use the C ++ language because I have never programmed in C ++ only in C so I will switch to C ++.
 
+The other reason is that I will try to write in English.
 
 # Summary
 

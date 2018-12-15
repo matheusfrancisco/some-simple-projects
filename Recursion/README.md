@@ -1,27 +1,25 @@
 # Recursion
 
 
-Muitos problemas computacionais têm a seguinte propriedade: cada instância do problema contém uma instância menor do mesmo problema.
-Podemos chamar de recursão essa estrutura...
-
 Many computational problems have the following property: Each instance of the problem contains a smaller instance of the same problem.
 We can call recursion this structure ...
 
 ### Pseudo-código
 
-Se a instância é pequena então resolva o problema
-Se não 
-	reduza-a a uma instânia menor do mesmo problema,
-	aplique o método à instância menor
-	e volte à instância original
-
+If the instance is small then solve the problem
+If no
+	reduce it to a lesser extent of the same problem,
+	apply the method to the smaller instance
+	and return to the original instance
 
 #### Código
 
-Considere um problema determinar o valor de um elemento máximo de um vetor v[0..n-1]. 
-O tamanho de uma instância do problema é n. É claro que o problema só faz sentido se o vetor não for vazio, ou seja,
-se n>= 1 . Se n =1 , então v[0] é o maior. 
-Se n>1 então podemos procurar reduzindo este problema a problemas pequenos como mostramos no código
+Consider a problem to determine the value of a maximum element of a vector v [0..n-1].
+The size of an instance of the problem is n. Of course, the problem only makes sense if the vector is not empty, that is,
+if n> = 1. If n = 1, then v [0] is the largest.
+If n> 1 then we can look to reduce this problem to small problems as we show in the code
 
-Recursion.c 
+
+This was the first one when I did I had not switched to C ++
+<a href="https://github.com/matheusfrancisco/algorithms/blob/master/Recursion/recursion.c">Recurison.c</a>
 
