@@ -12,7 +12,7 @@ Some codes about OOP
 
 ## Javascript
 
-* [Objects](https://github.com/matheusfrancisco/some-codes-to-help-me/OOP/Javascript/Objects)
+* [Objects](https://github.com/matheusfrancisco/some-codes-to-help-me/tree/master/OOP/Javascript/Objects)
 * Prototypes
 * Prototypes Inheritance
 * Classes
