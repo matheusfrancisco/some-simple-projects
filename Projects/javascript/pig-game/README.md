@@ -1,4 +1,4 @@
-#PIG-GAME
+# PIG-GAME
 
 # GAME RULES:
 <img src="https://github.com/matheusfrancisco/some-codes-to-help-me/blob/master/Projects/javascript/pig-game/piggame.jpeg" with='500' heigth='650'>
