@@ -11,6 +11,8 @@ I would like to learn more about Algorithms then I decide to write some implemen
 ## OOP
 ## Interview questions
 
+## Projects
+
 #### Contact me
 
 If you've doubt, contact me : matheusmachdoufsc@gmail.com
