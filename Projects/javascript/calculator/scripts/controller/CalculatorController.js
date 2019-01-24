@@ -3,6 +3,9 @@ class CalculatorController
 
     constructor()
     {
+        this._lastOperator = '';
+        this._lasNumber ='';
+
         this._operation = [];
         this._locale = 'pt-BR';
         this._displayCalculatorElement = document.querySelector("#display");
@@ -21,6 +24,7 @@ class CalculatorController
             this.setDisplayDateTime();
 
         }, 1000);
+        this.setLastNumberToDsiplay();
 
     }
     
@@ -35,6 +39,7 @@ class CalculatorController
     clearAll()
     {
         this._operation = [];
+        this.setLastNumberToDsiplay();
     }
 
     clearEntry()
@@ -57,10 +62,43 @@ class CalculatorController
         this._operation[this._operation.length - 1] = value;
 
     }
+    getResult(){
+
+        return  eval(this._operation.join(""));
+
+    }
     calculate() {
-        let last = this._operation.pop();
-        let result = eval(this._operation.join(""));
-        this._operation = [result, last];
+        let last ='';
+        this._lastOperator = this.getLastItem();
+        if (this._operation.length < 3)
+        {
+            let firsItem = this._operation[0];
+            this._operation = [firsItem, this._lastOperator, this._lasNumber];
+        }
+
+        if(this._operation.length > 3)
+        {
+            last= this._operation.pop();
+            this._lasNumber = this.getResult();
+
+        }
+        //let last = this._operation.pop();
+        if(this._operation.length ==3)
+        {
+            this._lasNumber = this.getResult(false);
+        }
+        let result = this.getResult();
+
+        if(last == '%')
+        {
+            result /= 100;
+            this._operation = [result];
+
+        }else{
+            this._operation = [result];
+            if(last) this._operation.push(last);
+        }
+        this.setLastNumberToDsiplay();
     }
 
     pushOperation(value)
@@ -73,18 +111,36 @@ class CalculatorController
             //console.log(this._operation);
 
             this.calculate();
+            
+            
 
             //console.log(this._operation);
         }
+        //this.setLastNumberToDsiplay();
+
+    }
+    getLastItem(isOperator =true){
+        let lastItem;
+        for (let index = this._operation.length - 1; index >= 0; index--) {
+            
+                if (this.isOperator(this._operation[index])== isOperator) {
+                    lastItem = this._operation[index];
+                    break;
+                }
+            
+           
+        }
+        if(!lastItem){
+            lastItem = (isOperator) ? this._lastOperator : this._lasNumber;
+        }
+        return lastItem;
     }
     
     setLastNumberToDsiplay()
     {
-        let lastNumber ;
-        for (let index = this._operation.length -1; index >= 0 ; index--) {
-            lastNumber = this._operation[index];
-            
-        }
+        let lastNumber = this.getLastItem(false);
+       
+        if(!lastNumber) lastNumber = 0;
         this.displayCalculator = lastNumber;
     }
 
@@ -158,6 +214,7 @@ class CalculatorController
 
                 break;
             case 'igual':
+                this.calculate();
 
                 break;
            
