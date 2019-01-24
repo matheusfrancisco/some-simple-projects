@@ -1,0 +1,2 @@
+let calculator = new CalculatorController;
+
