@@ -11,7 +11,12 @@ class UserController {
             event.preventDefault();
             let btn = this.formElement.querySelector("[type=submit]");
             btn.disabled = true;   
+
             let values = this.getValues();
+            if(!values) 
+            {
+                return false;
+            }
 
             this.getPhoto().then(
                 (content)=>{
@@ -60,8 +65,13 @@ class UserController {
     getValues(){
 
         let user= {};
-
+        let isValid= true;
         [...this.formElement.elements].forEach((field, index) => {
+            if(['name', 'email', 'password'].indexOf(field.name) >-1 && !field.value){
+                field.parentElement.classList.add('has-error');
+                isValid = false;
+
+            }
             if (field.name == "gender") {
                 if (field.checked) {
                     user[field.name] = field.value;
@@ -75,6 +85,9 @@ class UserController {
         });
         console.log(user);
 
+        if (!isValid){
+            return false;
+        }
         return new User(
             user.name,
             user.gender,
@@ -86,9 +99,16 @@ class UserController {
             user.admin
             );
     }
-
+   
     addLine(dataUser) {
         let tr = document.createElement('tr');
+        let users = JSON.stringify(dataUser);
+
+        tr.dataset.user = users;
+        console.log('euuu', tr.dataset.user);
+
+        console.log('euuu2', JSON.parse(tr.dataset.user));
+
 
         tr.innerHTML = `
                     <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm"></td>
@@ -101,8 +121,28 @@ class UserController {
                       <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
                     </td>
                   `;
-        this.tableElement.appendChild(tr)
+        this.tableElement.appendChild(tr);
 
+        this.updateCount(users);
+    }
+
+    updateCount(dataSet) {
+
+        let numberUsers = 0;
+        let numberAdmin = 0;
+        console.log('teste');
+
+
+        [...this.tableElement.children].forEach(tr => {
+            console.log(dataSet);
+            numberUsers++;
+            console.log(JSON.parse(JSON.stringify(dataSet)));
+            //console.log(JSON.parse(tr.dataset.user));
+            //if (user._admin) numberAdmin++;
+        });
+        console.log(numberUsers);
+        document.querySelector("#number-users").innerHTML = numberUsers;
+        document.querySelector("#number-users-admins").innerHTML = numberAdmin;
     }
 
 
