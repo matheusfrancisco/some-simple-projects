@@ -8,7 +8,7 @@ I would like to learn more about Algorithms then I decide to write some implemen
 
 ## Data struct
 ## Algorithms
-## OOP
+
 ## Interview questions
 
 ## Projects

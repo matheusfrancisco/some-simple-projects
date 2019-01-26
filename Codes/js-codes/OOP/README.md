@@ -1,31 +1,16 @@
 # Object-oriented programming
 
 
-Some codes about OOP
+Some codes about OOP for sudy
 
-
-
-# Summary
-
-
-## Cpp
 
 ## Javascript
 
-* [Objects](https://github.com/matheusfrancisco/some-codes-to-help-me/tree/master/OOP/Javascript/Objects)
+* Objects
 * Prototypes
 * Prototypes Inheritance
 * Classes
 * Modules ES6
-
-## Python
-
-
-
-
-
-
-
 
 #### Just for fun
 
