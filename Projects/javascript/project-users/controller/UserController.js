@@ -9,6 +9,8 @@ class UserController {
         this.onSubmit();
         
         this.onEdit();
+
+        this.selectAll();
     }
 
     onEdit(){
@@ -43,19 +45,15 @@ class UserController {
                     }else{
                         result._photo =content;
                     }
-                    tr.dataset.user = JSON.stringify(result);
+                    let user = new User();
 
-                    tr.innerHTML = `
-                        <td><img src="${result._photo}" alt="User Image" class="img-circle img-sm"></td>
-                        <td>${result._name}</td>
-                        <td>${result._email}</td>
-                        <td>${(result._admin) ? "Sim" : "Não"}</td>
-                        <td>${Utils.dateFormat(result._register)}</td>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-                            <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
-                        </td>`;
-                    this.addEventsTr(tr);
+                    user.loadFromJSON(result);
+
+                    user.save();
+                    
+                    this.getTemplateTr(user, tr);
+
+                   
                     this.updateCount();
 
 
@@ -84,8 +82,10 @@ class UserController {
 
             this.getPhoto(this.formElement).then(
                 (content) => {
-
+                    
                     values.photo = content;
+
+                    values.save();
 
                     this.addLine(values);
                     this.formElement.reset();
@@ -163,12 +163,33 @@ class UserController {
             user.admin
         );
     }
+   
+    selectAll(){
+        let users = User.getUsersStorage();
+
+        users.forEach(dataUsers=>{
+            let user =new User();
+
+            user.loadFromJSON(dataUsers);
+
+            this.addLine(user);
+        })
+    }
+
 
     addLine(dataUser) {
 
-        let tr = document.createElement('tr');
+        let tr = this.getTemplateTr(dataUser);
+
+        this.tableElement.appendChild(tr);
+
+        this.updateCount();
+    }
+
+    getTemplateTr(dataUser, tr = null){
+        if(tr ===null) tr = document.createElement('tr');
+
         tr.dataset.user = JSON.stringify(dataUser);
-        console.log('debug',tr.dataset.user);
 
         tr.innerHTML = `
         <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm"></td>
@@ -180,17 +201,17 @@ class UserController {
             <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
             <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
         </td>`;
-        
         this.addEventsTr(tr);
-
-        this.tableElement.appendChild(tr);
-        console.log(tr);
-        this.updateCount();
+        return tr;
     }
 
     addEventsTr(tr){
         tr.querySelector(".btn-delete").addEventListener("click", e=>{
             if(confirm("Deseja realmente excluir?")){
+                let user = new User();
+                
+                user.loadFromJSON(JSON.parse(tr.dataset.user));
+                user.remove();
                 tr.remove();
                 this.updateCount();
             }
