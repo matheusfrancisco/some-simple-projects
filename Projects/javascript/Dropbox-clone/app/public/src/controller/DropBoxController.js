@@ -4,7 +4,7 @@ class DropBoxController{
 
         this.btnSendFileElement = document.querySelector("#btn-send-file");
         this.inputFileElement = document.querySelector("#files");
-        this.snackModalElement = document.querySelectorAll('#react-sanckbar-root');
+        this.snackModalElement = document.querySelector('#react-snackbar-root');
 
 
 
@@ -22,9 +22,10 @@ class DropBoxController{
         this.inputFileElement.addEventListener('change', event=>{
             
             console.log(event.target.files);
+            this.uploadTask(event.target.files);
             
-            this.snackModalElement = 'block';
-            
+            this.snackModalElement.style.display = 'block';
+
         });
 
     }
@@ -32,25 +33,34 @@ class DropBoxController{
     uploadTask(files){
 
         let promises = [];
+
         [...files].forEach(file=>{
             promises.push(new Promise((resolve, reject)=>{
+
+                
                 let ajax = new XMLHttpRequest();
+                
                 ajax.open('POST', '/upload');
+                
                 ajax.onload = event=>{
                     try{
+                        
                         resolve(JSON.parse(ajax.responseText));
+                    
                     }catch(e){
+
                         reject(e);
 
                     }
                 };
+
                 ajax.onerror =event =>{
 
                     reject(event);
                 
                 };
 
-                let formData = new formData();
+                let formData = new FormData();
 
                 formData.append('input-file', file);
                 
