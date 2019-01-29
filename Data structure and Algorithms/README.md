@@ -1,7 +1,7 @@
 # Some implementations in Algorithms
 
 
-I would like to learn more about Algorithms then I decide to write some implementation.
+I would like to learn more about Data structure then I decide to write some implementation.
 
 
 
