@@ -17,10 +17,15 @@ This is codes about implementation of data struct somethings like a recursion, l
 and in this folder I'll  put out code about compettion programming, puzzles and some interview questions ...
 
 ## Codes 
+
 In this folder I will put out codes on implementations that help me in my day, things like, Thread, async 
 
 ## Projects
+
 In this folder I will put implementation projects based on books or online courses.
+
+## Design Patterns
+
 
 #### Contact me
 
