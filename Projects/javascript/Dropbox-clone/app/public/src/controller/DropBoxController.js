@@ -13,7 +13,6 @@ class DropBoxController{
         this.progessBarElement = this.snackModalElement.querySelector('.mc-progress-bar-fg');
         this.nameFileElement = this.snackModalElement.querySelector('.filename');
         this.timeLeftElement = this.snackModalElement.querySelector('.timeleft');
-        
         this.listFilesEl = document.querySelector('#list-of-files-and-directories');
 
         this.btnNewFolder = document.querySelector('#btn-new-folder');
@@ -45,6 +44,69 @@ class DropBoxController{
         return this.listFilesEl.querySelectorAll('li.selected');
     }
 
+    removeFolderTask(ref, name, key) {
+
+        return new Promise((resolve, reject) => {
+
+            let folderRef = this.getFirebaseRef(ref + '/' + name);
+
+            folderRef.on('value', snapshot => {
+
+                folderRef.off('value');
+
+                if (snapshot.exists()) {
+
+                    snapshot.forEach(item => {
+
+                        let data = item.val();
+                        data.key = item.key;
+
+                        if (data.type === 'folder') {
+
+                            this.removeFolderTask(ref + '/' + name, data.name).then(() => {
+
+                                resolve({
+                                    fields: {
+                                        key: data.key
+                                    }
+                                });
+
+                            }).catch(err => {
+                                reject(err);
+                            });
+
+                        } else if (data.type) {
+
+                            this.removeFile(ref + '/' + name, data.name).then(() => {
+
+                                resolve({
+                                    fields: {
+                                        key: data.key
+                                    }
+                                });
+
+                            }).catch(err => {
+                                reject(err);
+                            });
+
+                        }
+
+                    });
+
+                    folderRef.remove();
+
+                } else {
+
+                    this.getFirebaseRef('pasta').child(key).remove();
+
+                }
+
+            });
+
+        });
+
+    }
+
     removeTask(){
         let promises = [];
 
@@ -53,16 +115,63 @@ class DropBoxController{
             let file =JSON.parse(li.dataset.file);
             let key = li.dataset.key
             
+            /*
+            use this save path in  
             let formData = new FormData();
 
             formData.append('path', file.path);
             formData.append('key', key)
 
             promises.push(this.ajax('/file', 'DELETE', formData));
+            */
+            promises.push(new Promise((resolve, reject) => {
 
-            
+                if (file.type === 'folder') {
+
+                    this.removeFolderTask(this.currentFolder.join('/'), file.name, key).then(() => {
+
+                        resolve({
+                            fields: {
+                                key
+                            }
+                        });
+
+                    }).catch(err => {
+
+                        reject(err);
+
+                    });
+
+                } else if (file.type) {
+
+                    this.removeFile(this.currentFolder.join('/'), file.name).then(() => {
+
+                        resolve({
+                            fields: {
+                                key
+                            }
+                        });
+
+                    }).catch(err => {
+
+                        reject(err);
+
+                    });
+
+                }
+
+            }));
+
         });
+
         return Promise.all(promises);
+
+    }
+    removeFile(ref, name) {
+
+        let fileRef = firebase.storage().ref(ref).child(name);
+
+        return fileRef.delete();
 
     }
     initEvents(){
@@ -156,10 +265,26 @@ class DropBoxController{
             //responses get collection to send to firebase
             this.uploadTask(event.target.files).then(responses =>{
                 //response get back server
+                /*back to ajax
                 responses.forEach(resp => {
                     
                     
                     this.getFirebaseRef().push().set(resp.files['input-file']);
+
+                });*/
+
+                responses.forEach(resp => {
+
+                    resp.ref.getDownloadURL().then(data => {
+
+                        this.getFirebaseRef().push().set({
+                            name: resp.name,
+                            type: resp.contentType,
+                            path: data,
+                            size: resp.size
+                        });
+
+                    });
 
                 });
                 this.uploadComplete();
@@ -235,26 +360,72 @@ class DropBoxController{
 
     }
 
-    uploadTask(files){
+    uploadTask(files) {
 
         let promises = [];
 
-        [...files].forEach(file=>{
+        [...files].forEach(file => {
+
+            promises.push(new Promise((resolve, reject) => {
+
+                let fileRef = firebase.storage().ref(this.currentFolder.join('/')).child(file.name);
+
+                let task = fileRef.put(file);
+
+                task.on('state_changed', snapshot => {
+
+                    this.uploadProgress({
+                        loaded: snapshot.bytesTransferred,
+                        total: snapshot.totalBytes
+                    }, file);
+
+                }, error => {
+
+                    console.error(error);
+                    reject(error);
+
+                }, () => {
+
+                    fileRef.getMetadata().then(metadata => {
+
+                        resolve(metadata);
+
+                    }).catch(err => {
+
+                        reject(err);
+
+                    });
+
+                });
+
+            }));
+
+        });
+
+        return Promise.all(promises);
+
+    }
+    /*this function save files local using promise e ajax
+    uploadTask(files) {
+
+        let promises = [];
+
+        [...files].forEach(file => {
             let formData = new FormData();
 
             formData.append('input-file', file);
 
-                promises.push(this.ajax('/upload', 'POST', formData, () => {
-                    this.uplaodProgress(event, file);
+            promises.push(this.ajax('/upload', 'POST', formData, () => {
+                this.uplaodProgress(event, file);
 
-                }, () => {
+            }, () => {
 
-                    this.startUploadTime = Date.now();
-                }));
+                this.startUploadTime = Date.now();
+            }));
         });
         return Promise.all(promises);
 
-    }
+    }*/
     
     uplaodProgress(event, file){
         let timespent = Date.now() - this.startUploadTime;
