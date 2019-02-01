@@ -85,8 +85,31 @@ class WhatsAppController{
     }
 
     initEvents(){
+	
+	    this.el.myPhoto.on('click', e=>{
+	    
+		this.el.panelEditProfile.addClass('open');
 
-        
+	    });
+            
+	    this.el.btnNewContact.on('click', e=>{
+	    
+		this.el.paneladdContact.addClass('open');
+
+	    });
+       
+	    this.el.btnClosePanelEditProfile.on('click', e=>{
+
+	   	this.el.panelEditProfile.removeClass('open'); 
+	    
+	    });
+
+
+
+    }
+
+    closeAllLeftPanel(){
+    
     }
 }
 
