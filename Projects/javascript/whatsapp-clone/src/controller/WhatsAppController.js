@@ -286,7 +286,7 @@ class WhatsAppController{
 
         this.el.inputText.on('keyup', e=>{
 
-            if(this.el.inputText.innerHTML.lenght)
+            if(this.el.inputText.innerHTML.length)
             {
                 this.el.inputPlaceholder.hide();
                 this.el.btnSendMicrophone.hide();
@@ -311,12 +311,47 @@ class WhatsAppController{
             
             this.el.panelEmojis.toggleClass('open');
 
+
+
         });
             
         this.el.panelEmojis.querySelectorAll('.emojik').forEach(emoji=>{
 
             emoji.on('click', e=>{
                 console.log(emoji.dataset.unicode);
+                let img = this.el.imgEmojiDefault.cloneNode();
+
+                img.style.cssText = emoji.style.cssText;
+                img.dataset.unicode = emoji.dataset.unicode;
+                img.alt = emoji.dataset.unicode;
+
+                emoji.classList.forEach(name=>{
+                    img.classList.add(name);
+                });
+
+                this.el.inputText.appendChild(img);
+
+                let cursor = window.getSelection();
+                if(!cursor.focusNode || !cursor.focusNode.id == 'input-text')
+                {
+                    this.el.inputText.focus();
+                    cursor = window.getSelection();
+
+                }
+                let range = document.createRange();
+
+                range = cursor.getRangeAt(0);
+                range.deleteContents();
+
+                let frag = document.createDocumentFragment();
+                frag.appendChild(img);
+                range.insertNode(frag);
+
+                range.setStartAfter(img);
+                
+
+                this.el.inputText.dispatchEvent(new Event('keyup'));
+
             });
 
         });
