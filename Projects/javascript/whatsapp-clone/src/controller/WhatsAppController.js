@@ -221,9 +221,10 @@ export  class WhatsAppController{
         });
 
         this.el.btnClosePanelCamera.on('click', e=>{
-            
-            this.el.panelCamera.removeClass('open');
+            this.closeAllMainPanel();
+            //this.el.panelCamera.removeClass('open');
             this.el.panelMessagesContainer.show();
+            this._camera.stop();
 
         });
 
