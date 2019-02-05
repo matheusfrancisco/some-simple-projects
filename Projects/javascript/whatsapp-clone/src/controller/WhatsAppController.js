@@ -1,6 +1,6 @@
 import {Format} from './../util/Format';
 import {CameraController} from './CameraController';
-
+import {DocumentPreviewController} from './DocumentPreviewController';
 
 export  class WhatsAppController{
 
@@ -87,6 +87,13 @@ export  class WhatsAppController{
             return this.classList.contains(name);
         }
 
+        Element.prototype.sleep = function (duration, fn) {
+
+            setTimeout(fn, duration);
+            return this;
+
+        }
+        
         HTMLFormElement.prototype.getForm = function () {
 
             return new FormData(this);
@@ -109,41 +116,25 @@ export  class WhatsAppController{
 
     initEvents(){
 	
-	    this.el.myPhoto.on('click', e=>{
-            
-            this.closeAllLeftPanel();
-            this.el.panelEditProfile.show();
-            setTimeout(() => {
+        this.el.myPhoto.on('click', event => {
 
+            this.el.panelAddContact.hide();
+            this.el.panelEditProfile.show().sleep(1, () => {
                 this.el.panelEditProfile.addClass('open');
+            });
 
-            }, 300);
-	    });
+        });
             
-	    this.el.btnNewContact.on('click', e=>{
-            
-            this.closeAllLeftPanel();
-            this.el.panelAddContact.show();
-
-            setTimeout(() => {
-                
-                this.el.panelAddContact.addClass('open');
-
-            }, 300);
-
-	    });
        
-	    this.el.btnClosePanelEditProfile.on('click', e=>{
+        this.el.btnClosePanelEditProfile.on('click', event => {
 
-            this.el.panelEditProfile.removeClass('open'); 
-	    
+            this.el.panelEditProfile.removeClass('open').sleep(300, () => {
+                this.el.panelEditProfile.hide();
+            });
+
         });
         
-        this.el.btnClosePanelAddContact.on('click', e=>{
-            
-            this.el.panelAddContact.removeClass('open');
-
-        })
+       
 
         this.el.photoContainerEditProfile.on('click', e=>{
 
@@ -165,6 +156,26 @@ export  class WhatsAppController{
             console.log(this.el.inputNamePanelEditProfile.innerHTML);
 
         });
+
+
+        /**
+         * START: Adicionar Contato
+         */
+        this.el.btnNewContact.on('click', event => {
+
+            this.el.panelEditProfile.hide()
+            this.el.panelAddContact.show().sleep(1, () => {
+                this.el.panelAddContact.addClass('open');
+            });
+
+        });
+
+        this.el.btnClosePanelAddContact.on('click', e => {
+
+            this.el.panelAddContact.removeClass('open');
+
+        });
+
 
         this.el.formPanelAddContact.on('submit', e=>{
 
@@ -196,6 +207,8 @@ export  class WhatsAppController{
 
         this.el.btnAttachPhoto.on('click', e=>{
             //
+            this.closeAllMainPanel();
+            this.el.panelMessagesContainer.show();
             this.el.inputPhoto.click();
         });
 
@@ -211,61 +224,212 @@ export  class WhatsAppController{
         this.el.btnAttachCamera.on('click', e => {
             
             this.closeAllMainPanel();
+            this.el.panelMessagesContainer.hide();
+
             this.el.panelCamera.addClass('open');
-            this.el.panelCamera.css({
-              'height': 'calc(100% - 120px)'  
+            this.el.panelCamera.sleep(100, () => {
+                this.el.panelCamera.style.height = 'calc(100% - 120px)';
             });
 
+            //this._cameraController = new CameraController(this.el.videoCamera);
             this._camera = new CameraController(this.el.videoCamera);
 
         });
 
         this.el.btnClosePanelCamera.on('click', e=>{
+            this._camera.stop();
+
             this.closeAllMainPanel();
             //this.el.panelCamera.removeClass('open');
             this.el.panelMessagesContainer.show();
-            this._camera.stop();
 
         });
 
-        this.el.btnTakePicture.on('click', e=>{
+        this.el.btnTakePicture.on('click', event=>{
 
             let dataUrl = this._camera.takePicture();
             this.el.pictureCamera.src = dataUrl;
             this.el.pictureCamera.show();
             this.el.videoCamera.hide();
             this.el.btnReshootPanelCamera.show();
-            this.el.containerTakePicture.hide();
             this.el.containerSendPicture.show();
+            this.el.containerTakePicture.hide();
+
 
         });
 
-        this.el.btnReshootPanelCamera.on('click', e=>{
+        this.el.btnReshootPanelCamera.on('click',event=>{
+
+            this.el.btnReshootPanelCamera.hide();
+
             this.el.pictureCamera.hide();
             this.el.videoCamera.show();
-            this.el.btnReshootPanelCamera.hide();
-            this.el.containerTakePicture.show();
             this.el.containerSendPicture.hide();
+
+            this.el.containerTakePicture.show();
         });
 
         this.el.btnSendPicture.on('click', e=>{
             console.log(this.el.pictureCamera.src);
         });
+        /*
+        this.el.btnAttachDocument.on('click', event => {
 
+            this.el.inputDocument.click();
+
+        });*/
+        
         this.el.btnAttachDocument.on('click', e => {
-            this.closeAllLeftPanel();
+
+            this.closeAllMainPanel();
+            //this.el.panelMessagesContainer.hide();
             this.el.panelDocumentPreview.addClass('open');
             this.el.panelDocumentPreview.css({
                
                 'heigh': 'calc(100% - 120px)'
             
             });
+            this.el.inputDocument.click();
+
         });
+
+        this.el.inputDocument.on('change', e => {
+
+            if (this.el.inputDocument.files.length) {
+
+                let file = this.el.inputDocument.files[0];
+
+
+
+                this._documentPreview = new DocumentPreviewController(file);
+
+                this._documentPreview.getPreviewData().then(data => {
+
+                    this.el.filePanelDocumentPreview.hide();
+                    this.el.imagePanelDocumentPreview.show();
+
+                    this.el.imgPanelDocumentPreview.src = data.src;
+                    this.el.imgPanelDocumentPreview.show();
+
+                    this.el.infoPanelDocumentPreview.innerHTML = data.info;
+
+                    //this.el.imgPanelDocumentPreview.show();
+
+
+                }).catch(event => {
+
+                   /* if (event.error) {
+                        console.error(event.event);
+                    } else {
+
+                        switch (file.type) {
+                            case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                            case 'application/msword':
+                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-doc';
+                                break;
+
+                            case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                            case 'application/vnd.ms-excel':
+                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-xls';
+                                break;
+
+                            case 'application/vnd.ms-powerpoint':
+                            case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-ppt';
+                                break;
+
+                            default:
+                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-generic';
+                        }
+
+                        this.el.filePanelDocumentPreview.show();
+                        this.el.imagePanelDocumentPreview.hide();
+
+                        this.el.filenamePanelDocumentPreview.innerHTML = file.name;
+
+                    }
+                    */
+                });
+
+            }
+
+        });
+
+        /*this.el.inputDocument.on('change', event => {
+
+            if (this.el.inputDocument.files.length) {
+
+                let file = this.el.inputDocument.files[0];
+
+                this.closeAllMainPanel();
+                this.el.panelMessagesContainer.hide();
+                this.el.panelDocumentPreview.addClass('open');
+                this.el.panelDocumentPreview.sleep(500, () => {
+                    this.el.panelDocumentPreview.style.height = 'calc(100% - 120px)';
+                });
+
+
+                this._documentPreview = new DocumentPreviewController(file);
+
+                this._documentPreview.getPreviewData().then(data => {
+
+                    this.el.filePanelDocumentPreview.show();
+                    this.el.imagePanelDocumentPreview.hide();
+                    this.el.imgPanelDocumentPreview.src = data.src;
+                    this.el.imgPanelDocumentPreview.show();
+
+                    this.el.infoPanelDocumentPreview.innerHTML = data.info;
+
+                }).catch(event => {
+
+                    if (event.error) {
+                        console.error(event.event);
+                    } else {
+
+                        switch (file.type) {
+                            case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                            case 'application/msword':
+                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-doc';
+                                break;
+
+                            case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                            case 'application/vnd.ms-excel':
+                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-xls';
+                                break;
+
+                            case 'application/vnd.ms-powerpoint':
+                            case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-ppt';
+                                break;
+
+                            default:
+                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-generic';
+                        }
+
+                        this.el.filePanelDocumentPreview.show();
+                        this.el.imagePanelDocumentPreview.hide();
+
+                        this.el.filenamePanelDocumentPreview.innerHTML = file.name;
+
+                    }
+
+                });
+
+            }
+
+        });*/
+
 
         this.el.btnSendDocument.on('click', e=>{
 
         });
+        
+        this.el.btnClosePanelDocumentPreview.on('click', event => {
 
+            this.closeAllMainPanel();
+            this.el.panelMessagesContainer.show();
+
+        });
         this.el.btnAttachContact.on('click', e => {
             this.el.modalContacts.show();
         });
