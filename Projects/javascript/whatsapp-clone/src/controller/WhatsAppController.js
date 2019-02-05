@@ -282,13 +282,12 @@ export  class WhatsAppController{
         this.el.btnAttachDocument.on('click', e => {
 
             this.closeAllMainPanel();
-            //this.el.panelMessagesContainer.hide();
             this.el.panelDocumentPreview.addClass('open');
+
             this.el.panelDocumentPreview.css({
-               
-                'heigh': 'calc(100% - 120px)'
-            
+                'height': 'calc(100% - 120px)',
             });
+
             this.el.inputDocument.click();
 
         });
@@ -297,139 +296,77 @@ export  class WhatsAppController{
 
             if (this.el.inputDocument.files.length) {
 
+                this.el.panelDocumentPreview.css({
+                    'height': '1%',
+                });
+
                 let file = this.el.inputDocument.files[0];
 
+                this._documentPreviewController = new DocumentPreviewController(file);
 
+                this._documentPreviewController.getPreviewData().then(result => {
 
-                this._documentPreview = new DocumentPreviewController(file);
-
-                this._documentPreview.getPreviewData().then(data => {
-
-                    this.el.filePanelDocumentPreview.hide();
+                    this.el.imgPanelDocumentPreview.src = result.src;
+                    this.el.infoPanelDocumentPreview.innerHTML = result.info;
                     this.el.imagePanelDocumentPreview.show();
+                    this.el.filePanelDocumentPreview.hide();
 
-                    this.el.imgPanelDocumentPreview.src = data.src;
-                    this.el.imgPanelDocumentPreview.show();
+                    this.el.panelDocumentPreview.css({
+                        'height': 'calc(100% - 120px)',
+                    });
 
-                    this.el.infoPanelDocumentPreview.innerHTML = data.info;
+                }).catch(err => {
 
-                    //this.el.imgPanelDocumentPreview.show();
+                    this.el.panelDocumentPreview.css({
+                        'height': 'calc(100% - 120px)',
+                    });
 
+                    switch (file.type) {
 
-                }).catch(event => {
+                        case 'application/vnd.ms-excel':
+                        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-xls";
+                            break;
 
-                   /* if (event.error) {
-                        console.error(event.event);
-                    } else {
+                        case 'application/vnd.ms-powerpoint':
+                        case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-ppt";
+                            break;
 
-                        switch (file.type) {
-                            case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-                            case 'application/msword':
-                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-doc';
-                                break;
+                        case 'application/msword':
+                        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-doc";
+                            break;
 
-                            case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-                            case 'application/vnd.ms-excel':
-                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-xls';
-                                break;
-
-                            case 'application/vnd.ms-powerpoint':
-                            case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-ppt';
-                                break;
-
-                            default:
-                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-generic';
-                        }
-
-                        this.el.filePanelDocumentPreview.show();
-                        this.el.imagePanelDocumentPreview.hide();
-
-                        this.el.filenamePanelDocumentPreview.innerHTML = file.name;
+                        default:
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-generic";
+                            break;
 
                     }
-                    */
+
+                    this.el.filenamePanelDocumentPreview.innerHTML = file.name;
+                    this.el.imagePanelDocumentPreview.hide();
+                    this.el.filePanelDocumentPreview.show();
+
                 });
+
+                console.log(file);
 
             }
 
         });
 
-        /*this.el.inputDocument.on('change', event => {
-
-            if (this.el.inputDocument.files.length) {
-
-                let file = this.el.inputDocument.files[0];
-
-                this.closeAllMainPanel();
-                this.el.panelMessagesContainer.hide();
-                this.el.panelDocumentPreview.addClass('open');
-                this.el.panelDocumentPreview.sleep(500, () => {
-                    this.el.panelDocumentPreview.style.height = 'calc(100% - 120px)';
-                });
-
-
-                this._documentPreview = new DocumentPreviewController(file);
-
-                this._documentPreview.getPreviewData().then(data => {
-
-                    this.el.filePanelDocumentPreview.show();
-                    this.el.imagePanelDocumentPreview.hide();
-                    this.el.imgPanelDocumentPreview.src = data.src;
-                    this.el.imgPanelDocumentPreview.show();
-
-                    this.el.infoPanelDocumentPreview.innerHTML = data.info;
-
-                }).catch(event => {
-
-                    if (event.error) {
-                        console.error(event.event);
-                    } else {
-
-                        switch (file.type) {
-                            case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-                            case 'application/msword':
-                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-doc';
-                                break;
-
-                            case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-                            case 'application/vnd.ms-excel':
-                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-xls';
-                                break;
-
-                            case 'application/vnd.ms-powerpoint':
-                            case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-ppt';
-                                break;
-
-                            default:
-                                this.el.iconPanelDocumentPreview.classList.value = 'jcxhw icon-doc-generic';
-                        }
-
-                        this.el.filePanelDocumentPreview.show();
-                        this.el.imagePanelDocumentPreview.hide();
-
-                        this.el.filenamePanelDocumentPreview.innerHTML = file.name;
-
-                    }
-
-                });
-
-            }
-
-        });*/
-
+        this.el.btnClosePanelDocumentPreview.on('click', e => {
+            this.closeAllMainPanel();
+            this.el.panelMessagesContainer.show();
+        });
 
         this.el.btnSendDocument.on('click', e=>{
 
         });
         
-        this.el.btnClosePanelDocumentPreview.on('click', event => {
+      
 
-            this.closeAllMainPanel();
-            this.el.panelMessagesContainer.show();
-
-        });
         this.el.btnAttachContact.on('click', e => {
             this.el.modalContacts.show();
         });
