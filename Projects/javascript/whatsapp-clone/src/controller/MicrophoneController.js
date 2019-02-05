@@ -1,7 +1,10 @@
-export class CameraController {
+import {ClassEvent} from "../util/ClassEvent"
+
+export class CameraController extends ClassEvent{
 
     constructor() {
-     
+        //call constructor father
+        super();
 
         navigator.mediaDevices.getUserMedia({
             audio: true
@@ -13,6 +16,9 @@ export class CameraController {
             audio.src = URL.createObjectURL(stream)
         
             audio.play();
+
+            this.trigger('play', audio);
+
 
         }).catch(err => {
             console.error(err);
