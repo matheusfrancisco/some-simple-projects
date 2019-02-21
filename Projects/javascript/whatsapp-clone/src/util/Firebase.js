@@ -20,14 +20,15 @@ export class Firebase {
     }
 
     init(){
-        if(!this._initialized){
+        if(!window._initializedFirebase){
 
             firebase.initializeApp(this._config);
-            firebase.firestore().settings({
+            /*because is true for default in new version */
+            /*firebase.firestore().settings({
                 timestampsInSnapshots: true
-            });
+            });*/
 
-            this._initilized= true;
+            window._initializedFirebase= true;
 
         }
     }
@@ -42,4 +43,26 @@ export class Firebase {
 
         return firebase.storage();
     }
+
+    initAuth(){
+
+        return new Promise((s,f)=>{
+            let provider = new firebase.auth.GoogleAuthProvider();
+
+            firebase.auth().signInWithPopup(provider).then(result=>{ 
+
+                let token = result.credential.accessToken;
+                let user = result.user;
+
+                s({
+                    user,token
+                 });
+
+            }).catch(err=>{
+                f(err); 
+            })
+        });
+
+    }
+
 }
