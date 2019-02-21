@@ -11,6 +11,7 @@
   "author": "Matheus Francisco B Machado <matheusmachadoufsc@gmail.com> (https://matheusfrancisco.com.br/)",
   "license": "MIT",
   "dependencies": {
+    "firebase": "^5.8.3",
     "pdfjs-dist": "^2.0.943",
     "webpack": "^3.1.0",
     "webpack-dev-server": "^2.5.1"
