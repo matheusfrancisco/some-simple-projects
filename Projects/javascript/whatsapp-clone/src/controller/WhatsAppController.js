@@ -30,6 +30,8 @@ export  class WhatsAppController{
                 this._user.on('datachange',data =>{
                     document.querySelector('title').innerHTML = data.name + ' -WhatsApp Clone';
 
+                    this.el.inputNamePanelEditProfile.innerHTML = data.name;
+
                     if(data.photo)
                     {
                         let photo = this.el.imgPanelEditProfile;
@@ -42,8 +44,19 @@ export  class WhatsAppController{
                         photo2.show();
                     }
                 })
+                this._user.name = response.user.displayName;
+                this._user.email = response.user.email;
+                this._user.photo = response.user.photoURL;
 
-                let userRef = User.findByEmail(response.user.email);
+                this._user.save().then(()=>{
+                     this.el.appContent.css({
+                             display:'flex'
+                     });
+
+
+                });
+
+                /*let userRef = User.findByEmail(response.user.email);
 
                 userRef.set({
                     name:response.user.displayName,
@@ -54,7 +67,7 @@ export  class WhatsAppController{
                              display:'flex'
                      });
 
-                });
+                    });*/
 
 
                 console.log(`reponse`, response);
