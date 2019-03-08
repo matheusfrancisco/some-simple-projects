@@ -95,12 +95,12 @@ export  class WhatsAppController{
             return this;
 
         }
-        
+
         Element.prototype.show = function () {
             this.style.display = 'block';
             return this;
         }
-        
+
         Element.prototype.toggle = function () {
             this.style.display = (this.style.display === 'none') ? 'block':'none';
             return this;
@@ -215,6 +215,15 @@ export  class WhatsAppController{
 
         this.el.btnSavePanelEditProfile.on('click', e=>{
 
+            this.el.btnSavePanelEditProfile.disabled = true;
+
+            this._user.name = this.el.inputNamePanelEditProfile.innerHTML;
+
+            this._user.save().then(()=>{
+
+                this.el.btnSavePanelEditProfile.disabled = false;
+
+            });
             console.log(this.el.inputNamePanelEditProfile.innerHTML);
 
         });
