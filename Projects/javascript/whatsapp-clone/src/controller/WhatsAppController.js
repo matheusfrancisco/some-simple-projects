@@ -195,15 +195,13 @@ export  class WhatsAppController{
             });
 
         });
-        
-       
 
         this.el.photoContainerEditProfile.on('click', e=>{
 
             this.el.inputProfilePhoto.click();
 
         });
-        
+
         this.el.inputNamePanelEditProfile.on('keypress', e=>{
 
             if(e.key === 'Enter'){
@@ -251,7 +249,25 @@ export  class WhatsAppController{
         this.el.formPanelAddContact.on('submit', e=>{
 
             e.preventDefault();
+
             let formData = new FormData(this.el.formPanelAddContact);
+
+            let contact = new User(formData.get('email'));
+
+            contact.on('datachange', data=>{
+
+                if(data.name) {
+
+                    this._user.addContact(contact).then(()=>{
+
+                        this.el.btnClosePanelAddContact.click();
+                        console.info('Contato Adicionado');
+                    });
+
+                }else{
+                    console.error('Usuário não foi encontrado.');
+                }
+            });
 
 
         });
